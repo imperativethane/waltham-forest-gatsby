@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'gatsby'
+import styled from 'styled-components'
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -11,6 +12,8 @@ import ResultsIcon from '../images/results.png';
 import UpcomingEventsIcon from '../images/upcoming-events.png';
 import SquadIcon from '../images/squad.png';
 import ContactUsIcon from '../images/contact-us.png';
+import nextArrow from '../images/right-arrow.png';
+import prevArrow from '../images/left-arrow.png';
 
 
 const cards = [ 
@@ -47,39 +50,77 @@ const cards = [
     }
 ];
 
-const carouselStyle = {
-    height: '600px',
-    width: '400px',
-    border: 'solid 5px #a7b8ef'
 
-}
+const StyledSlider = styled(Slider)`
+
+    /* .slick-slider {
+        display: grid !important;
+        justify-content: center !important;
+    } */
+
+    /* .slick-initiliazed {
+        display: flex !important;
+        justify-content: center !important;
+    } */
+    .slick-next {
+        background: url(${nextArrow}) center center no-repeat !important;
+        height: 100px;
+        width: 100px;
+
+        &::before {
+            display: none;
+        }
+    }
+
+    .slick-prev {
+        background: url(${prevArrow}) center center no-repeat !important;
+        height: 100px;
+        width: 100px;
+        position: absolute;
+
+        &::before {
+            display: none;
+        }
+    }
+
+    .slick-slide {
+        height: 600px;
+        width: 400px !important;
+        border: solid 5px ${props => props.theme.colors.primary};
+        margin: 0 50px;
+    }
+
+    .slick-list {
+        width: 1000px;
+        left: 100px;
+    }
+`
 
 
 class Carousel extends React.Component {
     render() {
         const settings = {
-            dots: true,
             infinite: true,
-            speed: 500,
+            speed: 750,
             slidesToShow: 2,
             arrows: true, 
             slidesToScroll: 1,
         };
 
         return(
-            <Slider {...settings}>
-                {cards.map(card => {
-                    return (
-                        <div style={carouselStyle}>
-                            <img src={card.icon} alt='Icon' />
-                            <h1>{card.title}</h1>
-                            <p>{card.body}</p>
-                            <Link to={card.buttonUrl}>{card.buttonText}</Link>
-                        </div>
-                    )
-                })
-                }
-            </Slider>
+                <StyledSlider {...settings}>
+                        {cards.map(card => {
+                            return (
+                                <div>
+                                        <img src={card.icon} alt='Icon' />
+                                        <h1>{card.title}</h1>
+                                        <p>{card.body}</p>
+                                        <Link to={card.buttonUrl}>{card.buttonText}</Link>
+                                </div>
+                            )
+                        })
+                        }
+                </StyledSlider>
         )
     }
 }

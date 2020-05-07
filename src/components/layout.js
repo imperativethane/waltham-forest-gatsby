@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { useStaticQuery, graphql } from "gatsby"
-import { ThemeProvider } from "styled-components"
+import styled, { ThemeProvider } from "styled-components"
 
 
 import GlobalStyle from "./theme/globalStyles"
@@ -9,6 +9,14 @@ import Theme from "./theme/themes"
 
 import Header from "./header"
 import Footer from "./footer"
+
+const MainWrapper = styled.div`
+  margin: 0 auto;
+  width: 1200px;
+  padding: 0;
+  /* display: flex;
+  justify-content: center; */
+`
 
 const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
@@ -25,15 +33,9 @@ const Layout = ({ children }) => {
     <ThemeProvider theme={Theme} >
       <GlobalStyle />
       <Header siteTitle={data.site.siteMetadata.title} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: 1000,
-          padding: `0`,
-        }}
-      >
+      <MainWrapper>
         <main>{children}</main>
-      </div>
+      </MainWrapper>
       <Footer />
     </ThemeProvider>
   )
