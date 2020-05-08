@@ -12,10 +12,8 @@ import Footer from "./footer"
 
 const MainWrapper = styled.div`
   margin: 0 auto;
-  width: 1200px;
+  width: 1000px;
   padding: 0;
-  /* display: flex;
-  justify-content: center; */
 `
 
 const Layout = ({ children }) => {

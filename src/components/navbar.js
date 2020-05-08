@@ -5,8 +5,8 @@ import Links from './Links/headerLinks'
 const NavStyle = styled.div`
     display: grid;
     grid-template-columns: 10% 80% 10%;
-    padding-top: 10px;
-    margin-bottom: 2rem;
+    padding-top: ${props => props.theme.spacers.small};
+    margin-bottom: ${props => props.theme.spacers.regular};
 `
 
 const LinkWrapper = styled.div`

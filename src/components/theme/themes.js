@@ -28,6 +28,7 @@ export default {
         extraLarge: '3.125rem',
         large: '2rem',
         regular: '1rem',
-        indent: '1.5625rem'
+        indent: '1.5625rem',
+        small: '0.625rem'
     }
 }

@@ -13,7 +13,7 @@ const HeaderWrapper = styled.div`
 const LogoStyle = styled.div`
   display: flex;
   justify-content: center;
-  padding-bottom: ${props => props.theme.spacers.large};
+  padding-bottom: ${props => props.theme.spacers.regular};
 `
 
 const Header = () => (
