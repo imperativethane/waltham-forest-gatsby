@@ -1,18 +1,22 @@
 import React from "react"
-// import { Link } from "gatsby"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
+import History from "../components/history"
+import Season from "../components/season"
+import CoachingTeam from "../components/coachingTeam"
+import Honours from "../components/honours"
+import HallOfFame from "../components/hallOfFame"
+
 const AboutUsPage = () => (
   <Layout>
     <SEO title="About Us" />
-    <h1>Upcoming Events</h1>
-    <h2>Welcome to your new Gatsby site.</h2>
-    <h3>Now go build something great.</h3>
-    <h4>Now go build something great.</h4>
-    <h5>Now go build something great.</h5>
-    <p>Now go build something great.</p>
+    <History />
+    <Season />
+    <CoachingTeam />
+    <Honours />
+    <HallOfFame />
   </Layout>
 )
 

@@ -1,22 +1,21 @@
 import React from "react"
-import Carousel from '../components/mainCarousel'
-// import { Link } from "gatsby"
+import Carousel from '../components/main-carousel/mainCarousel'
+import styled from 'styled-components'
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-const pageStyle = {
-  paddingTop: '50px',
-  paddingBottom: '100px'
-
-}
+const CarouselWrapper = styled.div`
+  padding-top: 50px;
+  padding-bottom: 100px;
+`
 
 const IndexPage = () => (
   <Layout>
     <SEO title="Home" />
-    <div style={pageStyle}>
+    <CarouselWrapper>
       <Carousel />
-    </div>
+    </CarouselWrapper>
   </Layout>
 )
 
