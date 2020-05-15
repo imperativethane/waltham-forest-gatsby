@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import Slider from 'react-slick'
 
 import MenuItems from './menuItems'
-import items from './carouselData'
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -20,8 +19,6 @@ const StyledSlider = styled(Slider)`
         &::before {
             display: none;
         }
-        
-
     }
 
     .slick-prev {
@@ -63,10 +60,6 @@ const StyledSlider = styled(Slider)`
 
 
 class Carousel extends React.Component {
-    componentWillMount() {
-        
-    }
-
     render() {
         const settings = {
             infinite: false,
@@ -74,12 +67,11 @@ class Carousel extends React.Component {
             slidesToShow: 2,
             arrows: true, 
             slidesToScroll: 1,
-            
         };
 
         return(
                 <StyledSlider {...settings}>
-                        {items.map(menuItem => {
+                        {this.props.items.map(menuItem => {
                             return <MenuItems 
                                 icon={menuItem.icon} 
                                 title={menuItem.title} 

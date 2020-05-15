@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import Links from './Links/headerLinks'
+import { logout } from '../utils/auth'
 
 const NavStyle = styled.div`
     display: grid;
@@ -18,14 +19,20 @@ const Navbar = () => (
 <NavStyle>
     <LinkWrapper />
     <LinkWrapper>
-        <Links to="/about-us" type="header"der>About us</Links>
-        <Links to="/results" type="header">Results & Table</Links>
-        <Links to="/upcoming-events" type="header">Upcoming Events</Links>
-        <Links to="/squad" type="header">Squad</Links>
-        <Links to="/contact-us" type="header">Contact Us</Links>
+        <Links to="/manager/results" type="header">Results</Links>
+        <Links to="/manager/upcoming-events" type="header">Upcoming Events</Links>
+        <Links to="/manager/squad" type="header">Squad</Links>
     </LinkWrapper>
     <LinkWrapper>
-        <Links to="/account/" type="header">Manager LogIn</Links>
+    <a
+        href="#logout"
+        onClick={e => {
+        logout()
+        e.preventDefault()
+        }}
+    >
+    Log Out
+    </a>
     </LinkWrapper>
 </NavStyle>
 )
