@@ -2,7 +2,6 @@ import React from "react"
 import PropTypes from "prop-types"
 import styled, { ThemeProvider } from "styled-components"
 
-
 import GlobalStyle from "./theme/globalStyles"
 import Theme from "./theme/themes"
 
@@ -16,14 +15,11 @@ const MainWrapper = styled.div`
 `
 
 const Layout = ({ children }) => {
-
   return (
-    <ThemeProvider theme={Theme} >
+    <ThemeProvider theme={Theme}>
       <GlobalStyle />
       <Header />
-      <MainWrapper>
-        {children}
-      </MainWrapper>
+      <MainWrapper>{children}</MainWrapper>
       <Footer />
     </ThemeProvider>
   )

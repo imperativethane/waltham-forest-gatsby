@@ -1,84 +1,105 @@
-import auth0 from "auth0-js"
+import auth0js from "auth0-js"
 
 export const isBrowser = typeof window !== "undefined"
 
-const tokens = {
-  idToken: false,
-  accessToken: false,
-}
+let profile = false
 
-let user = {}
-
-export const isAuthenticated = () => {
-  return tokens.idToken !== false
-}
-
-const auth = isBrowser
-  ? new auth0.WebAuth({
+const auth0 = isBrowser
+  ? new auth0js.WebAuth({
       domain: process.env.AUTH0_DOMAIN,
       clientID: process.env.AUTH0_CLIENTID,
-      redirectUri: process.env.AUTH0_CALLBACK,
       responseType: "token id_token",
-      scope: "openid profile email",
+      scope: "openid profile",
+      redirectUri: process.env.AUTH0_CALLBACK,
     })
   : {}
 
-export const login = () => {
-  if (!isBrowser) {
-    return
-  }
-
-  auth.authorize()
+export const getAccessToken = () => {
+  return window.localStorage.getItem("access_token")
 }
 
-export const logout = () => {
-  tokens.accessToken = false
-  tokens.idToken = false
-  user = {}
-  window.localStorage.setItem("isLoggedIn", false)
+const getUser = () => {
+  return new Promise((resolve, reject) => {
+    // If the user has already logged in, don’t bother fetching again.
+    if (profile) {
+      resolve(profile)
+      return
+    }
 
-  auth.logout({
-    returnTo: window.location.origin,
+    const accessToken = getAccessToken()
+
+    if (!isLoggedIn()) {
+      resolve("no user name")
+      return
+    }
+
+    auth0.client.userInfo(accessToken, (err, userProfile) => {
+      if (err) {
+        reject(err)
+        return
+      }
+
+      profile = userProfile
+      resolve(profile)
+    })
   })
 }
 
-const setSession = (cb = () => {}) => (err, authResult) => {
-  if (err) {
-    if (err.error === "login_required") {
-      login()
+export const getUserNickname = () =>
+  isBrowser ? window.localStorage.getItem("nickname") : ""
+
+export const getUserProfileImage = () =>
+  isBrowser ? window.localStorage.getItem("profile_image") : ""
+
+const setUserDetails = user => {
+  if (!isBrowser) return false
+  window.localStorage.setItem("nickname", `@${user.nickname}`)
+  window.localStorage.setItem("profile_image", `${user.picture}`)
+}
+
+const setSession = authResult => {
+  const expiresAt = JSON.stringify(
+    authResult.expiresIn * 1000 + new Date().getTime()
+  )
+
+  window.localStorage.setItem("access_token", authResult.accessToken)
+  window.localStorage.setItem("id_token", authResult.idToken)
+  window.localStorage.setItem("expires_at", expiresAt)
+
+  return true
+}
+
+export const handleLogin = () => {
+  auth0.authorize()
+
+  return false
+}
+
+export const handleAuthentication = callback => {
+  if (!isBrowser) return null
+  auth0.parseHash(async (err, authResult) => {
+    if (authResult && authResult.accessToken && authResult.idToken) {
+      setSession(authResult)
+      setUserDetails(await getUser())
+      callback()
+    } else if (err) {
+      console.error(err)
     }
-  }
-  if (authResult && authResult.accessToken && authResult.idToken) {
-    tokens.idToken = authResult.idToken
-    tokens.accessToken = authResult.accessToken
-
-    auth.client.userInfo(tokens.accessToken, (_err, userProfile) => {
-      user = userProfile
-      window.localStorage.setItem("isLoggedIn", true)
-
-      cb()
-    })
-  }
+  })
 }
 
-export const checkSession = callback => {
-  const isLoggedIn = window.localStorage.getItem("isLoggedIn")
-  if (isLoggedIn === "false" || isLoggedIn === null) {
-    callback()
-  }
-  const protectedRoutes = [`/account`, `/manager-home`];
-  const isProtectedRoute = protectedRoutes
-    .map(route => window.location.pathname.includes(route))
-    .some(route => route)
-  if (isProtectedRoute) {
-    auth.checkSession({}, setSession(callback))
-  }
+export const isLoggedIn = () => {
+  if (!isBrowser) return null
+  let expiresAt = JSON.parse(window.localStorage.getItem("expires_at"))
+  return new Date().getTime() < expiresAt
 }
 
-export const handleAuthentication = () => {
-  auth.parseHash(setSession())
-}
-
-export const getProfile = () => {
-  return user
+export const logout = callback => {
+  if (!isBrowser) return null
+  window.localStorage.removeItem("access_token")
+  window.localStorage.removeItem("id_token")
+  window.localStorage.removeItem("expires_at")
+  window.localStorage.removeItem("nickname")
+  window.localStorage.removeItem("profile_image")
+  callback()
 }

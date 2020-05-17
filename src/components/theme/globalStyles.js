@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components"
 
 const GlobalStyle = createGlobalStyle`
 @import "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap";
@@ -623,4 +623,4 @@ pre tt:after {
 }
 `
 
-export default GlobalStyle;
+export default GlobalStyle

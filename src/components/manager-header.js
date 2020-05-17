@@ -1,10 +1,9 @@
 import React from "react"
-import styled from 'styled-components'
+import styled from "styled-components"
 
-import NavBar from './manager-navbar'
-import logo from '../images/teamlogo200.png'
-import PhotoLink from './Links/photoLinks'
-
+import NavBar from "./manager-navbar"
+import logo from "../images/teamlogo200.png"
+import PhotoLink from "./Links/photoLinks"
 
 const HeaderWrapper = styled.div`
   background-color: ${props => props.theme.colors.primary};
@@ -17,12 +16,17 @@ const LogoStyle = styled.div`
 `
 
 const Header = () => (
-<HeaderWrapper>
-  <NavBar />
-  <LogoStyle>
-    <PhotoLink to="/manager-home" height="200px" src={logo} alt="Waltham Forest Logo" />
-  </LogoStyle>
-</HeaderWrapper>
+  <HeaderWrapper>
+    <NavBar />
+    <LogoStyle>
+      <PhotoLink
+        to="/manager-home"
+        height="200px"
+        src={logo}
+        alt="Waltham Forest Logo"
+      />
+    </LogoStyle>
+  </HeaderWrapper>
 )
 
 export default Header
