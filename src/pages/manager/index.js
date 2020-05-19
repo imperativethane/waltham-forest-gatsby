@@ -2,13 +2,17 @@ import React from "react"
 import styled from "styled-components"
 import { Router } from "@reach/router"
 
-import { login, isAuthenticated, getProfile } from "../utils/auth"
+import { login, isAuthenticated, getProfile } from "../../utils/auth"
 
-import Carousel from "../components/mainCarousel/mainCarousel"
-import Layout from "../components/layout"
-import SEO from "../components/seo"
+import Results from "./results"
+import UpcomingEvents from "./upcoming-events"
+import Squad from "./squad"
 
-import items from "../components/mainCarousel/managerCarouselData"
+import Carousel from "../../components/mainCarousel/mainCarousel"
+import Layout from "../../components/layout"
+import SEO from "../../components/seo"
+
+import items from "../../components/mainCarousel/managerCarouselData"
 
 const CarouselWrapper = styled.div`
   padding-top: 50px;
@@ -23,10 +27,6 @@ const Home = () => (
     </CarouselWrapper>
   </>
 )
-
-const Results = () => <p>Results</p>
-const UpcomingEvents = () => <p>Upcoming Events</p>
-const Squad = () => <p>Squad</p>
 
 const Manager = () => {
   if (!isAuthenticated()) {
