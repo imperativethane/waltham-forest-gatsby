@@ -1,6 +1,7 @@
 import React from "react"
 import styled from "styled-components"
 import Slider from "react-slick"
+import { isAuthenticated } from "../../utils/auth"
 
 import MenuItems from "./menuItems"
 
@@ -39,11 +40,11 @@ const StyledSlider = styled(Slider)`
   }
 
   .slick-slide:nth-child(even) {
-    border: solid 5px ${props => props.theme.colors.secondary};
+    border: solid 5px ${props => isAuthenticated() ? props.theme.colors.primary : props.theme.colors.secondary};
   }
 
   .slick-slide:nth-child(odd) {
-    border: solid 5px ${props => props.theme.colors.primary};
+    border: solid 5px ${props => isAuthenticated() ? props.theme.colors.secondary : props.theme.colors.primary};
   }
 
   .slick-disabled {

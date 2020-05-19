@@ -18,8 +18,8 @@ const items = [
     title: "Upcoming Events",
     titleColor: true,
     body: [
-      "Interested in the fixture list? Need the address for our training session? Or maybe you want to attend the next big night out?",
-      "Take a look at our upcoming events.",
+      "Need to organise a training session or announce the next big night out?",
+      "Go to the Upcoming Events page.",
     ],
     icon: UpcomingEventsIcon,
     buttonText: "Upcoming",
