@@ -45,8 +45,8 @@ const MenuItems = ({
       <MenuIcon src={icon} alt="Icon" />
       <MenuTitle titleColor={titleColor}>{title}</MenuTitle>
       <MenuBodyWrapper>
-        {body.map(body => {
-          return <MenuBody>{body}</MenuBody>
+        {body.map((body, index) => {
+          return <MenuBody key={index}>{body}</MenuBody>
         })}
       </MenuBodyWrapper>
       <Button to={buttonUrl}>{buttonText}</Button>

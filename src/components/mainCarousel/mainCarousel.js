@@ -70,9 +70,10 @@ class Carousel extends React.Component {
 
     return (
       <StyledSlider {...settings}>
-        {this.props.items.map(menuItem => {
+        {this.props.items.map((menuItem, index) => {
           return (
             <MenuItems
+              key={index}
               icon={menuItem.icon}
               title={menuItem.title}
               titleColor={menuItem.titleColor}
