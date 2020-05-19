@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import Button from "../Links/buttonLinks"
+import Button from "../links/buttonLinks"
 
 const MenuItem = styled.div`
   display: grid !important;

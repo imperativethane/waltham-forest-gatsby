@@ -6,7 +6,7 @@ import styled, { ThemeProvider } from "styled-components"
 import GlobalStyle from "./theme/globalStyles"
 import Theme from "./theme/themes"
 
-import Header from "./header"
+import Header from "./header/header"
 import Footer from "./footer"
 
 const MainWrapper = styled.div`

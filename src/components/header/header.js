@@ -1,9 +1,11 @@
 import React from "react"
 import styled from "styled-components"
 
-import NavBar from "./manager-navbar"
-import logo from "../images/teamlogo200.png"
-import PhotoLink from "./Links/photoLinks"
+import { isAuthenticated } from "../../utils/auth"
+
+import NavBar from "./navbar"
+import logo from "../../images/teamlogo200.png"
+import PhotoLink from "../links/photoLinks"
 
 const HeaderWrapper = styled.div`
   background-color: ${props => props.theme.colors.primary};
@@ -19,12 +21,12 @@ const Header = () => (
   <HeaderWrapper>
     <NavBar />
     <LogoStyle>
-      <PhotoLink
-        to="/manager-home"
-        height="200px"
-        src={logo}
-        alt="Waltham Forest Logo"
-      />
+    <PhotoLink 
+      to={isAuthenticated() ? "/manager" : "/"}
+      height="200px" 
+      src={logo} 
+      alt="Waltham Forest Logo" 
+    />
     </LogoStyle>
   </HeaderWrapper>
 )

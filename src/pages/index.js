@@ -1,8 +1,8 @@
 import React from "react"
-import Carousel from "../components/main-carousel/mainCarousel"
+import Carousel from "../components/mainCarousel/mainCarousel"
 import styled from "styled-components"
 
-import items from "../components/main-carousel/carouselData"
+import items from "../components/mainCarousel/carouselData"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"

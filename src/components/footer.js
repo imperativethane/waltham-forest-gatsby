@@ -1,13 +1,14 @@
 import React from "react"
 import styled from "styled-components"
+import { AboutUs, Results, UpcomingEvents, Squad, ContactUs } from "./links/navLinks"
 
-import Links from "./Links/footerLinks"
-import PhotoLinks from "./Links/photoLinks"
+import PhotoLinks from "./links/photoLinks"
 
 import teamLogo from "../images/teamlogo150.png"
 import twitterLogo from "../images/twitter-logo.png"
 import instagramLogo from "../images/instagram-logo.png"
 import facebookLogo from "../images/facebook-logo.png"
+import { isAuthenticated } from "../utils/auth"
 
 const FooterWrapper = styled.div`
   background-color: #c00c0b;
@@ -18,12 +19,16 @@ const FooterWrapper = styled.div`
 
 const LinkWrapper = styled.div`
   padding-top: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `
 
 const LogoWrapper = styled.div`
   display: flex;
   justify-content: center;
   padding-top: 25px;
+  padding-bottom: 25px;
 `
 
 const SocialMediaWrapper = styled.div`
@@ -38,18 +43,26 @@ const SocialContent = styled.h6`
   padding-bottom: ${props => props.theme.spacers.regular};
 `
 
+// const Home = () => {
+//   return isAuthenticated() ? (
+//     <PhotoLink to="/manager" height="150px" src={logo} alt="Waltham Forest Logo" />
+//   ) : (
+//     <PhotoLink to="/" height="150px" src={logo} alt="Waltham Forest Logo" />
+//   )
+// }
+
 const Footer = () => (
   <FooterWrapper>
     <LinkWrapper>
-      <Links to="/about-us">About Us</Links>
-      <Links to="/results">Results & Table</Links>
-      <Links to="/upcoming-events">Upcoming Events</Links>
-      <Links to="/squad">Squad</Links>
-      <Links to="/contact-us">Contact Us</Links>
+      <AboutUs />
+      <Results />
+      <UpcomingEvents />
+      <Squad />
+      <ContactUs />
     </LinkWrapper>
     <LogoWrapper>
       <PhotoLinks
-        to="/"
+        to={isAuthenticated() ? "/manager" : "/"}
         height="150px"
         src={teamLogo}
         alt="Waltham Forest Logo"

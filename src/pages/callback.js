@@ -4,7 +4,5 @@ import { handleAuthentication } from "../utils/auth"
 export default () => {
   handleAuthentication()
 
-  return (
-      <p>Logging you in...</p>
-  )
+  return <p>Logging you in...</p>
 }

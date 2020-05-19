@@ -23,7 +23,7 @@ let user = {}
 
 export const isAuthenticated = () => {
   if (!isBrowser) {
-    return;
+    return
   }
 
   return localStorage.getItem("isLoggedIn") === "true"
@@ -63,7 +63,7 @@ export const silentAuth = callback => {
 
 export const handleAuthentication = () => {
   if (!isBrowser) {
-    return;
+    return
   }
 
   auth.parseHash(setSession())

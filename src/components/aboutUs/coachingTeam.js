@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
 
-import managerOne from "../images/manager-one.png"
-import managerTwo from "../images/manager-two.png"
+import managerOne from "../../images/manager-one.png"
+import managerTwo from "../../images/manager-two.png"
 
 const CoachWrapper = styled.div`
   margin: 0 auto;

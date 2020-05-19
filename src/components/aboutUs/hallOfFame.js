@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
 
-import playerOne from "../images/player-one.png"
-import playerTwo from "../images/player-two.png"
+import playerOne from "../../images/player-one.png"
+import playerTwo from "../../images/player-two.png"
 
 const HallWrapper = styled.div`
   margin: 0 auto;

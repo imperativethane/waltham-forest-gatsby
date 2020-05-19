@@ -1,14 +1,14 @@
 import React from "react"
 import styled from "styled-components"
-import { Router } from '@reach/router'
+import { Router } from "@reach/router"
 
 import { login, isAuthenticated, getProfile } from "../utils/auth"
 
-import Carousel from "../components/main-carousel/mainCarousel"
-import Layout from "../components/manager-layout"
+import Carousel from "../components/mainCarousel/mainCarousel"
+import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-import items from "../components/main-carousel/managerCarouselData"
+import items from "../components/mainCarousel/managerCarouselData"
 
 const CarouselWrapper = styled.div`
   padding-top: 50px;
@@ -48,7 +48,6 @@ const Manager = () => {
       </Layout>
     </>
   )
-
 }
 
 export default Manager

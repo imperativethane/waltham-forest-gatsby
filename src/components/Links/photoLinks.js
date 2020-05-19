@@ -7,9 +7,9 @@ const StyledLink = styled(Link)`
   padding: 0 ${props => props.theme.spacers.indent};
 `
 
-const PhotoLinks = ({ height, src, alt }) => {
+const PhotoLinks = ({ height, src, alt, to }) => {
   return (
-    <StyledLink height={height}>
+    <StyledLink to={to} height={height}>
       <img src={src} alt={alt} />
     </StyledLink>
   )

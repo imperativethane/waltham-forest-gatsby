@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components"
 
-import teamShot from "../images/team-shot.png"
+import teamShot from "../../images/team-shot.png"
 
 const HistoryWrapper = styled.div`
   margin: 0 auto;
