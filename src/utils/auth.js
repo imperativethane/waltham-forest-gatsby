@@ -1,105 +1,79 @@
-import auth0js from "auth0-js"
+import auth0 from "auth0-js"
+import { navigate } from "gatsby"
 
-export const isBrowser = typeof window !== "undefined"
+const isBrowser = typeof window !== "undefined"
 
-let profile = false
-
-const auth0 = isBrowser
-  ? new auth0js.WebAuth({
+const auth = isBrowser
+  ? new auth0.WebAuth({
       domain: process.env.AUTH0_DOMAIN,
       clientID: process.env.AUTH0_CLIENTID,
-      responseType: "token id_token",
-      scope: "openid profile",
       redirectUri: process.env.AUTH0_CALLBACK,
+      responseType: "token id_token",
+      scope: "openid profile email",
     })
   : {}
 
-export const getAccessToken = () => {
-  return window.localStorage.getItem("access_token")
+const tokens = {
+  accessToken: false,
+  idToken: false,
+  expiresAt: false,
 }
 
-const getUser = () => {
-  return new Promise((resolve, reject) => {
-    // If the user has already logged in, don’t bother fetching again.
-    if (profile) {
-      resolve(profile)
-      return
-    }
+let user = {}
 
-    const accessToken = getAccessToken()
+export const isAuthenticated = () => {
+  if (!isBrowser) {
+    return;
+  }
 
-    if (!isLoggedIn()) {
-      resolve("no user name")
-      return
-    }
-
-    auth0.client.userInfo(accessToken, (err, userProfile) => {
-      if (err) {
-        reject(err)
-        return
-      }
-
-      profile = userProfile
-      resolve(profile)
-    })
-  })
+  return localStorage.getItem("isLoggedIn") === "true"
 }
 
-export const getUserNickname = () =>
-  isBrowser ? window.localStorage.getItem("nickname") : ""
+export const login = () => {
+  if (!isBrowser) {
+    return
+  }
 
-export const getUserProfileImage = () =>
-  isBrowser ? window.localStorage.getItem("profile_image") : ""
-
-const setUserDetails = user => {
-  if (!isBrowser) return false
-  window.localStorage.setItem("nickname", `@${user.nickname}`)
-  window.localStorage.setItem("profile_image", `${user.picture}`)
+  auth.authorize()
 }
 
-const setSession = authResult => {
-  const expiresAt = JSON.stringify(
-    authResult.expiresIn * 1000 + new Date().getTime()
-  )
+const setSession = (cb = () => {}) => (err, authResult) => {
+  if (err) {
+    navigate("/")
+    cb()
+    return
+  }
 
-  window.localStorage.setItem("access_token", authResult.accessToken)
-  window.localStorage.setItem("id_token", authResult.idToken)
-  window.localStorage.setItem("expires_at", expiresAt)
-
-  return true
+  if (authResult && authResult.accessToken && authResult.idToken) {
+    let expiresAt = authResult.expiresIn * 1000 + new Date().getTime()
+    tokens.accessToken = authResult.accessToken
+    tokens.idToken = authResult.idToken
+    tokens.expiresAt = expiresAt
+    user = authResult.idTokenPayload
+    localStorage.setItem("isLoggedIn", true)
+    navigate("/manager")
+    cb()
+  }
 }
 
-export const handleLogin = () => {
-  auth0.authorize()
-
-  return false
+export const silentAuth = callback => {
+  if (!isAuthenticated()) return callback()
+  auth.checkSession({}, setSession(callback))
 }
 
-export const handleAuthentication = callback => {
-  if (!isBrowser) return null
-  auth0.parseHash(async (err, authResult) => {
-    if (authResult && authResult.accessToken && authResult.idToken) {
-      setSession(authResult)
-      setUserDetails(await getUser())
-      callback()
-    } else if (err) {
-      console.error(err)
-    }
-  })
+export const handleAuthentication = () => {
+  if (!isBrowser) {
+    return;
+  }
+
+  auth.parseHash(setSession())
 }
 
-export const isLoggedIn = () => {
-  if (!isBrowser) return null
-  let expiresAt = JSON.parse(window.localStorage.getItem("expires_at"))
-  return new Date().getTime() < expiresAt
+export const getProfile = () => {
+  return user
 }
 
-export const logout = callback => {
-  if (!isBrowser) return null
-  window.localStorage.removeItem("access_token")
-  window.localStorage.removeItem("id_token")
-  window.localStorage.removeItem("expires_at")
-  window.localStorage.removeItem("nickname")
-  window.localStorage.removeItem("profile_image")
-  callback()
+export const logout = () => {
+  localStorage.setItem("isLoggedIn", false)
+  auth.logout()
 }

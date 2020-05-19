@@ -1,15 +1,10 @@
 import React from "react"
-import { navigate } from "gatsby"
 import { handleAuthentication } from "../utils/auth"
 
-import Layout from "../components/layout"
-
 export default () => {
-  handleAuthentication(() => navigate("/manager/home"))
+  handleAuthentication()
 
   return (
-    <Layout>
       <p>Logging you in...</p>
-    </Layout>
   )
 }

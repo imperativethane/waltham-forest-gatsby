@@ -1,7 +1,6 @@
 import React from "react"
 import styled from "styled-components"
 import Links from "./Links/headerLinks"
-import { handleLogin } from "../utils/auth"
 
 const NavStyle = styled.div`
   display: grid;
@@ -36,7 +35,9 @@ const Navbar = () => (
       </Links>
     </LinkWrapper>
     <LinkWrapper>
-      <button onClick={handleLogin}>Manager Login</button>
+      <Links to="/manager" type="header">
+        Manager Login
+      </Links>
     </LinkWrapper>
   </NavStyle>
 )
