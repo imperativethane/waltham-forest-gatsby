@@ -29,3 +29,5 @@ class SessionCheck extends React.Component {
 export const wrapRootElement = ({ element }) => {
   return <SessionCheck>{element}</SessionCheck>
 }
+
+// export { wrapRootElement } from './src/apollo/wrap-root-element';

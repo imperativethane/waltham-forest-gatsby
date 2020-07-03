@@ -1,3 +1,5 @@
+const { withAssetPrefix } = require("gatsby");
+
 module.exports = {
   siteMetadata: {
     title: `Waltham Forest Utd FC`,
@@ -39,6 +41,14 @@ module.exports = {
             variants: [`400`, `600`, `700`]
           },
         ],
+      }
+    }, 
+    {
+      resolve: 'gatsby-source-graphql',
+      options: {
+        typeName: 'WFAPI',
+        fieldName: 'walthamforest',
+        url: 'http://localhost:4000/graphql'
       }
     }
   ],

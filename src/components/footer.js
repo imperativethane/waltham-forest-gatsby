@@ -43,14 +43,6 @@ const SocialContent = styled.h6`
   padding-bottom: ${props => props.theme.spacers.regular};
 `
 
-// const Home = () => {
-//   return isAuthenticated() ? (
-//     <PhotoLink to="/manager" height="150px" src={logo} alt="Waltham Forest Logo" />
-//   ) : (
-//     <PhotoLink to="/" height="150px" src={logo} alt="Waltham Forest Logo" />
-//   )
-// }
-
 const Footer = () => (
   <FooterWrapper>
     <LinkWrapper>
