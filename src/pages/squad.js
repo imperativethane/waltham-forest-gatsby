@@ -2,7 +2,15 @@ import React from "react"
 // import { Link } from "gatsby"
 
 import Layout from "../components/layout"
+import styled from 'styled-components';
 // import SEO from "../components/seo"
+
+const Input = styled.input`
+    width: 250px;
+    font-size: ${props => props.theme.fontSize.p};
+    font-family: ${props => props.theme.fontFamily.regular};
+    margin-bottom: 1rem;
+`
 
 class SquadPage extends React.Component {
   // state = {
@@ -72,13 +80,13 @@ class SquadPage extends React.Component {
         <h1>Create Player</h1>
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="name">Name</label>
-          <input 
+          <Input 
             id="name" 
             type="text" 
             ref={this.nameElRef}
           />
           <label htmlFor="position">Position</label>
-          <input 
+          <Input 
             id="position" 
             type="text" 
             ref={this.positionElRef}
