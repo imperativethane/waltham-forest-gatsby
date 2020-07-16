@@ -70,7 +70,7 @@ export const Textarea = styled.textarea`
     font-family: ${props => props.theme.fontFamily.regular};
 `
 
-export const EmergencyContactHeader = styled.h1`
+export const Header = styled.h1`
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     text-align: left;

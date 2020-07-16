@@ -126,44 +126,6 @@ export const updatePlayerQuery = (id, firstName, surname, position, email, phone
     }
 } 
 
-export const createEmergencyContactQuery = (playerId, firstName, surname, relationship, phoneNumber) => {
-    return {
-        query: `
-            mutation CreateEmergencyContact(
-                $playerId: ID!,
-                $firstName: String!, 
-                $surname: String!,
-                $relationship: String!, 
-                $phoneNumber: String
-            ) {
-                createEmergencyContact(playerId: $playerId, emergencyContactInput: {
-                    firstName: $firstName, 
-                    surname: $surname,
-                    relationship: $relationship,
-                    phoneNumber: $phoneNumber,
-                }) {
-                    _id
-                    firstName
-                    surname
-                    emergencyContact {
-                        firstName
-                        surname
-                        relationship
-                        phoneNumber
-                     }
-                }
-            }
-        `,
-        variables: {
-            playerId: playerId,
-            firstName: firstName,
-            surname: surname,
-            relationship: relationship,
-            phoneNumber: phoneNumber
-        }
-    }
-} 
-
 export const updateEmergencyContactQuery = (playerId, firstName, surname, relationship, phoneNumber) => {
     return {
         query: `

@@ -4,7 +4,7 @@ import Button from '../../buttons/buttons';
 import addPhoto from "../../../images/add-photo.png";
 import divider from "../../../images/divider.png";
 
-import { createPlayerQuery, updatePlayerQuery, createEmergencyContactQuery, updateEmergencyContactQuery } from "./playerQueries";
+import { createPlayerQuery, updatePlayerQuery, updateEmergencyContactQuery } from "./playerQueries";
 
 import {
     Form,
@@ -16,7 +16,7 @@ import {
     Label,
     Input,
     Textarea,
-    EmergencyContactHeader,
+    Header,
     Divider,
     EmergencyContactsWrapper
 } from "./playerInformationStyles";
@@ -40,7 +40,7 @@ class PlayerContactDetails extends React.Component {
         this.ecphoneNumberElRef = React.createRef();
     }
 
-    handleNewPlayer = async event => {
+    handleSubmit= async event => {
         event.preventDefault();
         const firstName = this.firstNameElRef.current.value;
         const surname = this.surnameElRef.current.value;
@@ -58,94 +58,33 @@ class PlayerContactDetails extends React.Component {
         const ecphoneNumber = this.ecphoneNumberElRef.current.value;
 
         let playerRequest
-        playerRequest = createPlayerQuery(
-            firstName, 
-            surname,
-            position,
-            email,
-            phoneNumber,
-            addressOne,
-            addressTwo,
-            postcode,
-            information
-        )
-        
-        const handlePlayer = await fetch('http://localhost:4000/graphql', {
-            method: 'POST',
-            body: JSON.stringify(playerRequest),
-            headers: {
-            'Content-Type': 'application/json'
-            }
-        })
-
-        if (handlePlayer.status !== 201 && handlePlayer.status !== 200) {
-            throw new Error('Failed')
-        }
-
-        const handledPlayer = await handlePlayer.json();
-        await this.props.newPlayer(handledPlayer.data.createPlayer);
-
-        let emergencyContactRequest
-        if (ecfirstName.trim() !== "" || ecsurname.trim() !== "" || ecrelationship.trim() !== "" || ecphoneNumber.trim() !== "") {
-            emergencyContactRequest = createEmergencyContactQuery(
-                this.props.selectedPlayer._id,
-                ecfirstName,
-                ecsurname,
-                ecrelationship,
-                ecphoneNumber
+        if (!this.props.editingPlayer) {
+            playerRequest = createPlayerQuery(
+                firstName, 
+                surname,
+                position,
+                email,
+                phoneNumber,
+                addressOne,
+                addressTwo,
+                postcode,
+                information
             )
+        } else {
+            playerRequest = updatePlayerQuery(
+                this.props.selectedPlayer._id,
+                firstName, 
+                surname,
+                position,
+                email,
+                phoneNumber,
+                addressOne,
+                addressTwo,
+                postcode,
+                information
+            )
+        }
 
-            const handleEmergencyContact = await fetch('http://localhost:4000/graphql', {
-                method: 'POST',
-                body: JSON.stringify(emergencyContactRequest),
-                headers: {
-                'Content-Type': 'application/json'
-                }
-            })
-    
-            if (handleEmergencyContact.status !== 201 && handleEmergencyContact.status !== 200) {
-                throw new Error('Failed')
-            }
-    
-            const handledEmergencyContact = await handleEmergencyContact.json();
-            console.log(handledEmergencyContact)
-        } 
-
-        this.props.resetPlayer();
-        document.getElementById("contact-form").reset();
-    }
-
-    handleEditPlayer = async event => {
-        event.preventDefault();
-        const firstName = this.firstNameElRef.current.value;
-        const surname = this.surnameElRef.current.value;
-        const position = this.positionElRef.current.value;
-        const email = this.emailElRef.current.value;
-        const phoneNumber = this.phoneNumberElRef.current.value;
-        const addressOne = this.addressOneElRef.current.value;
-        const addressTwo = this.addressTwoElRef.current.value;
-        const postcode = this.postcodeElRef.current.value;
-        const information = this.informationElRef.current.value;
-
-        const ecfirstName = this.ecfirstNameElRef.current.value;
-        const ecsurname = this.ecsurnameElRef.current.value;
-        const ecrelationship = this.ecrelationshipElRef.current.value;
-        const ecphoneNumber = this.ecphoneNumberElRef.current.value;
-
-        let playerRequest
-        playerRequest = updatePlayerQuery(
-            this.props.selectedPlayer._id,
-            firstName, 
-            surname,
-            position,
-            email,
-            phoneNumber,
-            addressOne,
-            addressTwo,
-            postcode,
-            information
-        )
-        
         const handlePlayer = await fetch('http://localhost:4000/graphql', {
             method: 'POST',
             body: JSON.stringify(playerRequest),
@@ -159,8 +98,13 @@ class PlayerContactDetails extends React.Component {
         }
 
         const handledPlayer = await handlePlayer.json();
-        await this.props.updatePlayer(handledPlayer.data.updatePlayer);
 
+        if (!this.props.editingPlayer) {
+            await this.props.newPlayer(handledPlayer.data.createPlayer);
+        } else {
+            await this.props.updatePlayer(handledPlayer.data.updatePlayer);
+        }
+        
         let emergencyContactRequest
         if (ecfirstName.trim() !== "" || ecsurname.trim() !== "" || ecrelationship.trim() !== "" || ecphoneNumber.trim() !== "") {
             emergencyContactRequest = updateEmergencyContactQuery(
@@ -185,12 +129,17 @@ class PlayerContactDetails extends React.Component {
     
             const handledEmergencyContact = await handleEmergencyContact.json();
             await this.props.updatePlayer(handledEmergencyContact.data.updateEmergencyContact);
-        } 
+        }
+        
+        if (!this.props.editingPlayer) {
+            this.props.resetPlayer();
+            document.getElementById("contact-form").reset();
+        }
     }
 
     render() {
         return (
-            <Form id="contact-form" onSubmit={this.props.editingPlayer ? this.handleEditPlayer : this.handleNewPlayer}>
+            <Form id="contact-form" onSubmit={this.handleSubmit}>
                 <ContactDetailsWrapper>
                     <ContactDetailsContainerOne>
                         <Label htmlFor="firstName">First Name*</Label>
@@ -269,7 +218,7 @@ class PlayerContactDetails extends React.Component {
                         </InformationWrapper>
                     </ContactDetailsContainerTwo>
                 </ContactDetailsWrapper>
-                <EmergencyContactHeader>Emergency Contact</EmergencyContactHeader>
+                <Header>Emergency Contact</Header>
                 <Divider src={divider} alt="---------------------------------------------------------------------------------"/>
                 <EmergencyContactsWrapper>
                     <Label htmlFor="ecfirstName">First Name</Label>

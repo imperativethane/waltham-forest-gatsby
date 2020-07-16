@@ -11,8 +11,7 @@ class Squad extends React.Component {
             players: this.props.players,
             isLoading: false,
             selectedPlayer: {},
-            editingPlayer: false,
-            emergencyContact: {} 
+            editingPlayer: false
         }
         this.selectPlayer = this.selectPlayer.bind(this);
         this.resetPlayer = this.resetPlayer.bind(this);
@@ -39,19 +38,6 @@ class Squad extends React.Component {
             }  
         })
     }
-
-    // async updateEmergencyContact(updatedPlayer) {
-    //     await this.setState(prevState => {
-    //         const playerIndex = prevState.players.findIndex(player => player._id === updatedPlayer._id);
-    //         const players = prevState.players;
-    //         players[playerIndex].emergencyContact = updatedEmergencyContact;
-    //         const player = players[playerIndex];
-    //         return {
-    //             players: players,
-    //             selectedPlayer: player
-    //         }
-    //     })
-    // }
 
     async newPlayer(player) {
         await this.setState(prevState => {
@@ -82,7 +68,6 @@ class Squad extends React.Component {
                 />
                 {this.state.isLoading === true && <p>Loading...</p>}
                 {this.state.isLoading === false && <PlayerInformation 
-                    players={this.state.players}
                     editingPlayer={this.state.editingPlayer} 
                     selectedPlayer={this.state.selectedPlayer}
                     newPlayer={this.newPlayer}
