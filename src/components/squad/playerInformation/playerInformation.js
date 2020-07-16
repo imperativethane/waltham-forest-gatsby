@@ -1,79 +1,27 @@
-import React from 'react'
-import styled from 'styled-components';
+import React from 'react';
+
 import Button from '../../buttons/buttons';
 import addPhoto from "../../../images/add-photo.png";
+import divider from "../../../images/divider.png";
 
-const Form = styled.form`
-    margin-top: 100px;
-    padding: 0;
-    width: 90%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-`
+import { createPlayerQuery, updatePlayerQuery, createEmergencyContactQuery, updateEmergencyContactQuery } from "./playerQueries";
 
-const ContactDetailsWrapper = styled.div`
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 451.73px;
-`
+import {
+    Form,
+    ContactDetailsWrapper,
+    ContactDetailsContainerOne, 
+    ContactDetailsContainerTwo,
+    InformationWrapper,
+    ImageWrapper,
+    Label,
+    Input,
+    Textarea,
+    EmergencyContactHeader,
+    Divider,
+    EmergencyContactsWrapper
+} from "./playerInformationStyles";
 
-const ContactDetailsContainerOne = styled.div`
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-`
-
-const ContactDetailsContainerTwo = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
-    justify-content: flex-end;
-`
-
-const InformationWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-`
-
-const ImageWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-`
-
-const Label = styled.label`
-    color: ${props => props.theme.colors.dark};
-    font-size: ${props => props.theme.fontSize.p};
-    font-family: ${props => props.theme.fontFamily.regular};
-    font-weight: ${props => props.theme.fontWeight.bold};
-`
-
-const Input = styled.input`
-    width: 250px;
-    font-size: ${props => props.theme.fontSize.p};
-    font-family: ${props => props.theme.fontFamily.regular};
-    margin-bottom: 1rem;
-`
-
-const Textarea = styled.textarea`
-    width: 600px;
-    height: 200px;
-    font-size: ${props => props.theme.fontSize.p};
-    font-family: ${props => props.theme.fontFamily.regular};
-`
-
-class PlayerInformation extends React.Component {
+class PlayerContactDetails extends React.Component {
     constructor(props) {
         super(props);
         this.firstNameElRef = React.createRef();
@@ -85,9 +33,14 @@ class PlayerInformation extends React.Component {
         this.addressTwoElRef = React.createRef();
         this.postcodeElRef = React.createRef();
         this.informationElRef = React.createRef();
+
+        this.ecfirstNameElRef = React.createRef();
+        this.ecsurnameElRef = React.createRef();
+        this.ecrelationshipElRef = React.createRef();
+        this.ecphoneNumberElRef = React.createRef();
     }
 
-    handleSubmit = async event => {
+    handleNewPlayer = async event => {
         event.preventDefault();
         const firstName = this.firstNameElRef.current.value;
         const surname = this.surnameElRef.current.value;
@@ -99,74 +52,70 @@ class PlayerInformation extends React.Component {
         const postcode = this.postcodeElRef.current.value;
         const information = this.informationElRef.current.value;
 
-        const requestBody = {
-            query: `
-                mutation CreatePlayer(
-                    $firstName: String!, 
-                    $surname: String!
-                    $position: String!, 
-                    $email: String, 
-                    $phoneNumber: String, 
-                    $addressOne: String, 
-                    $addressTwo: String, 
-                    $postcode: String,
-                    $information: String,
-                ) {
-                    createPlayer(playerInput: {
-                        firstName: $firstName, 
-                        surname: $surname,
-                        position: $position,
-                        email: $email,
-                        phoneNumber: $phoneNumber,
-                        addressOne: $addressOne,
-                        addressTwo: $addressTwo,
-                        postcode: $postcode,
-                        information: $information,
-                    }) {
-                        _id
-                        firstName
-                        surname
-                        position
-                        email
-                        phoneNumber
-                        addressOne
-                        addressTwo
-                        postcode
-                        information
-                    }
-                }
-            `,
-            variables: {
-                firstName: firstName,
-                surname: surname,
-                position: position,
-                email: email,
-                phoneNumber: phoneNumber,
-                addressOne: addressOne,
-                addressTwo: addressTwo,
-                postcode: postcode,
-                information: information,
-            }
-        }
+        const ecfirstName = this.ecfirstNameElRef.current.value;
+        const ecsurname = this.ecsurnameElRef.current.value;
+        const ecrelationship = this.ecrelationshipElRef.current.value;
+        const ecphoneNumber = this.ecphoneNumberElRef.current.value;
+
+        let playerRequest
+        playerRequest = createPlayerQuery(
+            firstName, 
+            surname,
+            position,
+            email,
+            phoneNumber,
+            addressOne,
+            addressTwo,
+            postcode,
+            information
+        )
         
-        const createPlayer = await fetch('http://localhost:4000/graphql', {
+        const handlePlayer = await fetch('http://localhost:4000/graphql', {
             method: 'POST',
-            body: JSON.stringify(requestBody),
+            body: JSON.stringify(playerRequest),
             headers: {
             'Content-Type': 'application/json'
             }
         })
 
-        if (createPlayer.status !== 201 && createPlayer.status !== 200) {
+        if (handlePlayer.status !== 201 && handlePlayer.status !== 200) {
             throw new Error('Failed')
         }
 
-        const createdPlayer = await createPlayer.json();
-        console.log(createdPlayer)
+        const handledPlayer = await handlePlayer.json();
+        await this.props.newPlayer(handledPlayer.data.createPlayer);
+
+        let emergencyContactRequest
+        if (ecfirstName.trim() !== "" || ecsurname.trim() !== "" || ecrelationship.trim() !== "" || ecphoneNumber.trim() !== "") {
+            emergencyContactRequest = createEmergencyContactQuery(
+                this.props.selectedPlayer._id,
+                ecfirstName,
+                ecsurname,
+                ecrelationship,
+                ecphoneNumber
+            )
+
+            const handleEmergencyContact = await fetch('http://localhost:4000/graphql', {
+                method: 'POST',
+                body: JSON.stringify(emergencyContactRequest),
+                headers: {
+                'Content-Type': 'application/json'
+                }
+            })
+    
+            if (handleEmergencyContact.status !== 201 && handleEmergencyContact.status !== 200) {
+                throw new Error('Failed')
+            }
+    
+            const handledEmergencyContact = await handleEmergencyContact.json();
+            console.log(handledEmergencyContact)
+        } 
+
+        this.props.resetPlayer();
         document.getElementById("contact-form").reset();
     }
 
-    handleUpdate = async event => {
+    handleEditPlayer = async event => {
         event.preventDefault();
         const firstName = this.firstNameElRef.current.value;
         const surname = this.surnameElRef.current.value;
@@ -177,163 +126,185 @@ class PlayerInformation extends React.Component {
         const addressTwo = this.addressTwoElRef.current.value;
         const postcode = this.postcodeElRef.current.value;
         const information = this.informationElRef.current.value;
-        const id = this.props.selectedPlayer._id;
 
-        const requestBody = {
-            query: `
-                mutation UpdatePlayer(
-                    $_id: ID!
-                    $firstName: String!, 
-                    $surname: String!
-                    $position: String!, 
-                    $email: String, 
-                    $phoneNumber: String, 
-                    $addressOne: String, 
-                    $addressTwo: String, 
-                    $postcode: String,
-                    $information: String,
-                ) {
-                    updatePlayer(playerId: $_id, playerInput: {
-                        firstName: $firstName, 
-                        surname: $surname,
-                        position: $position,
-                        email: $email,
-                        phoneNumber: $phoneNumber,
-                        addressOne: $addressOne,
-                        addressTwo: $addressTwo,
-                        postcode: $postcode,
-                        information: $information,
-                    }) {
-                        _id
-                        firstName
-                        surname
-                        position
-                        email
-                        phoneNumber
-                        addressOne
-                        addressTwo
-                        postcode
-                        information
-                    }
-                }
-            `,
-            variables: {
-                _id: id,
-                firstName: firstName,
-                surname: surname,
-                position: position,
-                email: email,
-                phoneNumber: phoneNumber,
-                addressOne: addressOne,
-                addressTwo: addressTwo,
-                postcode: postcode,
-                information: information,
-            }
-        }
+        const ecfirstName = this.ecfirstNameElRef.current.value;
+        const ecsurname = this.ecsurnameElRef.current.value;
+        const ecrelationship = this.ecrelationshipElRef.current.value;
+        const ecphoneNumber = this.ecphoneNumberElRef.current.value;
 
-        const updatePlayer = await fetch('http://localhost:4000/graphql', {
+        let playerRequest
+        playerRequest = updatePlayerQuery(
+            this.props.selectedPlayer._id,
+            firstName, 
+            surname,
+            position,
+            email,
+            phoneNumber,
+            addressOne,
+            addressTwo,
+            postcode,
+            information
+        )
+        
+        const handlePlayer = await fetch('http://localhost:4000/graphql', {
             method: 'POST',
-            body: JSON.stringify(requestBody),
+            body: JSON.stringify(playerRequest),
             headers: {
             'Content-Type': 'application/json'
             }
         })
 
-        if (updatePlayer.status !== 201 && updatePlayer.status !== 200) {
+        if (handlePlayer.status !== 201 && handlePlayer.status !== 200) {
             throw new Error('Failed')
         }
 
-        const updatedPlayer = await updatePlayer.json();
-        console.log(updatedPlayer)
+        const handledPlayer = await handlePlayer.json();
+        await this.props.updatePlayer(handledPlayer.data.updatePlayer);
+
+        let emergencyContactRequest
+        if (ecfirstName.trim() !== "" || ecsurname.trim() !== "" || ecrelationship.trim() !== "" || ecphoneNumber.trim() !== "") {
+            emergencyContactRequest = updateEmergencyContactQuery(
+                this.props.selectedPlayer._id,
+                ecfirstName,
+                ecsurname,
+                ecrelationship,
+                ecphoneNumber
+            )
+
+            const handleEmergencyContact = await fetch('http://localhost:4000/graphql', {
+                method: 'POST',
+                body: JSON.stringify(emergencyContactRequest),
+                headers: {
+                'Content-Type': 'application/json'
+                }
+            })
+    
+            if (handleEmergencyContact.status !== 201 && handleEmergencyContact.status !== 200) {
+                throw new Error('Failed')
+            }
+    
+            const handledEmergencyContact = await handleEmergencyContact.json();
+            await this.props.updatePlayer(handledEmergencyContact.data.updateEmergencyContact);
+        } 
     }
 
     render() {
         return (
-            <Form onSubmit={this.handleSubmit} id="contact-form">
-            <ContactDetailsWrapper>
-                <ContactDetailsContainerOne>
-                    <Label htmlFor="firstName">First Name*</Label>
-                    <Input 
-                        id="firstName" 
-                        type="text" 
-                        ref={this.firstNameElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.firstName : ""}
-                    />
-                    <Label htmlFor="name">Surname*</Label>
-                    <Input 
-                        id="surname" 
-                        type="text" 
-                        ref={this.surnameElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.surname : ""}
-                    />
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input 
-                        id="email" 
-                        type="text" 
-                        ref={this.emailElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.email : ""}
-                    />
-                    <Label htmlFor="phoneNumber">Telephone Number</Label>
-                    <Input 
-                        id="phoneNumber" 
-                        type="text" 
-                        ref={this.phoneNumberElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.phoneNumber : ""}
-                    />
-                    <Label htmlFor="addressOne">Address 1</Label>
-                    <Input 
-                        id="addressOne" 
-                        type="text" 
-                        ref={this.addressOneElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.addressOne : ""}
-                    />
-                    <Label htmlFor="addressTwo">Address 2</Label>
-                    <Input 
-                        id="addressTwo" 
-                        type="text" 
-                        ref={this.addressTwoElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.addressTwo : ""}
-                    />
-                    <Label htmlFor="postcode">Postcode</Label>
-                    <Input 
-                        id="postcode" 
-                        type="text" 
-                        ref={this.postcodeElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.postcode : ""}
-                    />
-                    <Label htmlFor="position">Position*</Label>
-                    <Input 
-                        id="position" 
-                        type="text" 
-                        ref={this.positionElRef}
-                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.position : ""}
-                    />
-                </ContactDetailsContainerOne>
-                <ContactDetailsContainerTwo>
-                    <ImageWrapper>
-                        <img 
-                            src={addPhoto} 
-                            alt="This is where to upload from"
-                            width="250"
-                            height="250"
+            <Form id="contact-form" onSubmit={this.props.editingPlayer ? this.handleEditPlayer : this.handleNewPlayer}>
+                <ContactDetailsWrapper>
+                    <ContactDetailsContainerOne>
+                        <Label htmlFor="firstName">First Name*</Label>
+                        <Input 
+                            id="firstName" 
+                            type="text" 
+                            ref={this.firstNameElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.firstName : ""}
                         />
-                    </ImageWrapper>
-                    <InformationWrapper>
-                        <Label htmlFor="information">Information</Label>
-                        <Textarea
-                            id="information" 
-                            ref={this.informationElRef} 
-                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.information : ""}
+                        <Label htmlFor="name">Surname*</Label>
+                        <Input 
+                            id="surname" 
+                            type="text" 
+                            ref={this.surnameElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.surname : ""}
                         />
-                    </InformationWrapper>
-                </ContactDetailsContainerTwo>
-            </ContactDetailsWrapper>
-            <Button type="submit">{this.props.editingPlayer ? "Save Edit" : "Submit"}</Button>
-        </Form>
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input 
+                            id="email" 
+                            type="text" 
+                            ref={this.emailElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.email : ""}
+                        />
+                        <Label htmlFor="phoneNumber">Telephone Number</Label>
+                        <Input 
+                            id="phoneNumber" 
+                            type="text" 
+                            ref={this.phoneNumberElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.phoneNumber : ""}
+                        />
+                        <Label htmlFor="addressOne">Address 1</Label>
+                        <Input 
+                            id="addressOne" 
+                            type="text" 
+                            ref={this.addressOneElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.addressOne : ""}
+                        />
+                        <Label htmlFor="addressTwo">Address 2</Label>
+                        <Input 
+                            id="addressTwo" 
+                            type="text" 
+                            ref={this.addressTwoElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.addressTwo : ""}
+                        />
+                        <Label htmlFor="postcode">Postcode</Label>
+                        <Input 
+                            id="postcode" 
+                            type="text" 
+                            ref={this.postcodeElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.postcode : ""}
+                        />
+                        <Label htmlFor="position">Position*</Label>
+                        <Input 
+                            id="position" 
+                            type="text" 
+                            ref={this.positionElRef}
+                            defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.position : ""}
+                        />
+                    </ContactDetailsContainerOne>
+                    <ContactDetailsContainerTwo>
+                        <ImageWrapper>
+                            <img 
+                                src={addPhoto} 
+                                alt="This is where to upload from"
+                                width="250"
+                                height="250"
+                            />
+                        </ImageWrapper>
+                        <InformationWrapper>
+                            <Label htmlFor="information">Information</Label>
+                            <Textarea
+                                id="information" 
+                                ref={this.informationElRef} 
+                                defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.information : ""}
+                            />
+                        </InformationWrapper>
+                    </ContactDetailsContainerTwo>
+                </ContactDetailsWrapper>
+                <EmergencyContactHeader>Emergency Contact</EmergencyContactHeader>
+                <Divider src={divider} alt="---------------------------------------------------------------------------------"/>
+                <EmergencyContactsWrapper>
+                    <Label htmlFor="ecfirstName">First Name</Label>
+                    <Input 
+                        id="ecfirstName" 
+                        type="text" 
+                        ref={this.ecfirstNameElRef}
+                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.emergencyContact.firstName : ""}
+                    />
+                    <Label htmlFor="ecsurname">Surname</Label>
+                    <Input 
+                        id="ecsurname" 
+                        type="text" 
+                        ref={this.ecsurnameElRef}
+                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.emergencyContact.surname : ""}
+                    />
+                    <Label htmlFor="ecrelationship">Relationship</Label>
+                    <Input 
+                        id="ecrelationship" 
+                        type="text" 
+                        ref={this.ecrelationshipElRef}
+                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.emergencyContact.relationship: ""}
+                    />
+                    <Label htmlFor="ecphoneNumber">Telephone Number</Label>
+                    <Input 
+                        id="ecphoneNumber" 
+                        type="text" 
+                        ref={this.ecphoneNumberElRef}
+                        defaultValue={this.props.editingPlayer ? this.props.selectedPlayer.emergencyContact.phoneNumber : ""}
+                    />
+                </EmergencyContactsWrapper>
+                <Button type="submit">{this.props.editingPlayer ? "Save Edit" : "Submit"}</Button>
+            </Form>
         )
     }
 }
 
-export default PlayerInformation;
-
-
+export default PlayerContactDetails;

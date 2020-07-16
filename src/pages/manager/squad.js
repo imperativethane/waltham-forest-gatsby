@@ -2,7 +2,7 @@ import React from "react";
 import { useStaticQuery, graphql} from "gatsby";
 import PlayerCarousel from "../../components/squad/playerCarousel/playerCarousel";
 import PlayerInformation from "../../components/squad/playerInformation/playerInformation";
-import EmergencyContact from "../../components/squad/emergencyContact/emergencyContact";
+
 
 class Squad extends React.Component {
     constructor(props) {
@@ -15,58 +15,61 @@ class Squad extends React.Component {
             emergencyContact: {} 
         }
         this.selectPlayer = this.selectPlayer.bind(this);
-        this.addPlayer = this.addPlayer.bind(this);
+        this.resetPlayer = this.resetPlayer.bind(this);
+        this.newPlayer = this.newPlayer.bind(this);
+        this.updatePlayer = this.updatePlayer.bind(this);
     }
 
-    addPlayer() {
-        this.setState({
+    async resetPlayer() {
+        await this.setState({
             selectedPlayer: {},
             editingPlayer: false
         })
+        document.getElementById("contact-form").reset();
     }
 
-    selectPlayer(playerId) {
-        const player = this.state.players.find(player => player._id === playerId);
-        this.setState({
-            selectedPlayer: player,
-            editingPlayer: true
+    async updatePlayer(updatedPlayer) {
+        await this.setState(prevState => {
+            const playerIndex = prevState.players.findIndex(player => player._id === updatedPlayer._id);
+            const players = prevState.players;
+            players.splice(playerIndex, 1, updatedPlayer);
+            return {
+                players: players,
+                selectedPlayer: updatedPlayer
+            }  
         })
     }
 
-    async componentDidMount() {
-        if (this.state.editingPlayer) {
-            const requestBody = {
-                query: `
-                    query EmergencyContact($playerId: ID!) {
-                        playerEmergencyContact(playerId: $playerId) {
-                            _id
-                            firstName
-                            surname
-                            phoneNumber
-                            relationship
-                        }
-                    }
-                `,
-                variables: {
-                    playerId: this.state.selectedPlayer._id
-                }
-            }
+    // async updateEmergencyContact(updatedPlayer) {
+    //     await this.setState(prevState => {
+    //         const playerIndex = prevState.players.findIndex(player => player._id === updatedPlayer._id);
+    //         const players = prevState.players;
+    //         players[playerIndex].emergencyContact = updatedEmergencyContact;
+    //         const player = players[playerIndex];
+    //         return {
+    //             players: players,
+    //             selectedPlayer: player
+    //         }
+    //     })
+    // }
 
-            const emergencyContact = await fetch('http://localhost:4000/graphql', {
-                method: 'POST',
-                body: JSON.stringify(requestBody),
-                headers: {
-                'Content-Type': 'application/json'
-                }
-            })
-
-            if (emergencyContact.status !== 201 && emergencyContact.status !== 200) {
-                throw new Error('Failed')
+    async newPlayer(player) {
+        await this.setState(prevState => {
+            const players = prevState.players.concat(player);
+            return {
+                players: players,
+                selectedPlayer: player
             }
-    
-            const emergencyContactData = await emergencyContact.json();
-            console.log(emergencyContactData);
-        }
+        })
+    }
+
+    async selectPlayer(playerId) {
+        await document.getElementById("contact-form").reset();
+        const player = this.state.players.find(player => player._id === playerId);
+        await this.setState({
+            selectedPlayer: player,
+            editingPlayer: true
+        })
     }
 
     render() {
@@ -75,18 +78,17 @@ class Squad extends React.Component {
                 <PlayerCarousel 
                     players={this.state.players}
                     editPlayer={this.selectPlayer}
-                    addPlayer={this.addPlayer}
+                    addPlayer={this.resetPlayer}
                 />
                 {this.state.isLoading === true && <p>Loading...</p>}
                 {this.state.isLoading === false && <PlayerInformation 
+                    players={this.state.players}
                     editingPlayer={this.state.editingPlayer} 
                     selectedPlayer={this.state.selectedPlayer}
+                    newPlayer={this.newPlayer}
+                    resetPlayer={this.resetPlayer}
+                    updatePlayer={this.updatePlayer}
                 />}
-                {/* {this.state.isLoading === false && 
-                    this.state.editingPlayer === true && 
-                    <EmergencyContact />
-                } */}
-
             </React.Fragment>
         )
     }
@@ -111,6 +113,12 @@ export default () => {
                         starter
                         substitute
                         goalsScored
+                    }
+                    emergencyContact {
+                        firstName
+                        surname
+                        relationship
+                        phoneNumber
                     }
                 }
             }
